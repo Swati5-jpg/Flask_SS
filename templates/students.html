@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .actions a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: blue;
+        }
+        .actions a:hover {
+            text-decoration: underline;
+        }
+        .add-student {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Management System</h1>
+
+    <!-- Link to add a new student -->
+    <div class="add-student">
+        <a href="/add-student-form" style="color: green; font-weight: bold;">Add New Student</a>
+    </div>
+
+    <!-- Display the student list -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Grade</th>
+                <th>Subjects</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student['id'] }}</td>
+                <td>{{ student['name'] }}</td>
+                <td>{{ student['age'] }}</td>
+                <td>{{ student['grade'] }}</td>
+                <td>{{ student['subjects'] }}</td>
+                <td class="actions">
+                    <a href="/students/{{ student['id'] }}">View</a>
+                    <a href="/students/{{ student['id'] }}/edit">Edit</a>
+                    <form action="/students/{{ student['id'] }}/delete" method="POST" style="display: inline;">
+                        <button type="submit" style="color: red; background: none; border: none; cursor: pointer;">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Message if there are no students -->
+    {% if students|length == 0 %}
+    <p>No students found. <a href="/add-student-form">Add a new student</a>.</p>
+    {% endif %}
+</body>
+</html>
