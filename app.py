@@ -77,6 +77,25 @@ def edit_student(id):
     conn.close()
     return redirect(url_for('view_students'))
 
+# Route: Delete student form (confirmation page)
+@app.route('/students/<int:id>/delete', methods=['GET'])
+def delete_student_form(id):
+    conn = get_db_connection()
+    student = conn.execute('SELECT * FROM students WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    if not student:
+        return "Student not found!", 404
+    return render_template('delete_student.html', student=student)
+
+# Route: Delete student from the database
+@app.route('/students/<int:id>/delete', methods=['POST'])
+def delete_student(id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM students WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('view_students'))
+
 # Main application runner
 if __name__ == '__main__':
     app.run(debug=True)
