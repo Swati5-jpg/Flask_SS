@@ -22,6 +22,16 @@ def view_students():
     conn.close()
     return render_template('students.html', students=students)
 
+# Route: View details of a specific student
+@app.route('/students/<int:id>', methods=['GET'])
+def view_student_detail(id):
+    conn = get_db_connection()
+    student = conn.execute('SELECT * FROM students WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    if not student:
+        return "Student not found!", 404
+    return render_template('student_detail.html', student=student)
+
 # Route: Add a new student form
 @app.route('/add-student-form', methods=['GET'])
 def add_student_form():
@@ -38,6 +48,31 @@ def add_student():
     conn = get_db_connection()
     conn.execute('INSERT INTO students (name, age, grade, subjects) VALUES (?, ?, ?, ?)',
                  (name, age, grade, subjects))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('view_students'))
+
+# Route: Edit student form
+@app.route('/students/<int:id>/edit', methods=['GET'])
+def edit_student_form(id):
+    conn = get_db_connection()
+    student = conn.execute('SELECT * FROM students WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    if not student:
+        return "Student not found!", 404
+    return render_template('edit_student.html', student=student)
+
+# Route: Update student in the database
+@app.route('/students/<int:id>/edit', methods=['POST'])
+def edit_student(id):
+    name = request.form['name']
+    age = request.form['age']
+    grade = request.form['grade']
+    subjects = request.form['subjects']
+    
+    conn = get_db_connection()
+    conn.execute('UPDATE students SET name = ?, age = ?, grade = ?, subjects = ? WHERE id = ?',
+                 (name, age, grade, subjects, id))
     conn.commit()
     conn.close()
     return redirect(url_for('view_students'))
