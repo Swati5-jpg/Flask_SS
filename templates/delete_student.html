@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Student</title>
+</head>
+<body>
+    <h1>Delete Student</h1>
+    <p>Are you sure you want to delete the following student?</p>
+    <ul>
+        <li><strong>Name:</strong> {{ student['name'] }}</li>
+        <li><strong>Age:</strong> {{ student['age'] }}</li>
+        <li><strong>Grade:</strong> {{ student['grade'] }}</li>
+        <li><strong>Subjects:</strong> {{ student['subjects'] }}</li>
+    </ul>
+    <form method="POST" action="{{ url_for('delete_student', id=student['id']) }}">
+        <button type="submit">Yes, Delete</button>
+    </form>
+    <a href="{{ url_for('view_students') }}">Cancel</a>
+</body>
+</html>
