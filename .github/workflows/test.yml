@@ -1,28 +1,63 @@
-name: Python application
+name: Flask CI/CD
 
 on:
   push:
-    branches: [ "main", "dev", "feature"]
+    branches:
+      - main
   pull_request:
-    branches: [ "main", "dev"]
-
-permissions:
-  contents: read
+    branches:
+      - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./'Flask_ss'
+
     steps:
-      - name: Check out the repository to the runner
-        uses: actions/checkout@v4
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.10"
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Run a script
-        run: python -m unittest -s tests -p 'tests\_\*.py'
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9' # Use the Python version of your choice
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install flake8  # Install flake8 linter
+
+    - name: Lint with flake8
+      run: |
+        source venv/bin/activate
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Set up SQLite database
+      run: |
+        python -c "
+        import sqlite3;
+        conn = sqlite3.connect('students.db');
+        conn.execute('''
+        CREATE TABLE IF NOT EXISTS students (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          age INTEGER NOT NULL,
+          grade TEXT NOT NULL,
+          subjects TEXT NOT NULL
+        )''');
+        conn.close();"
+
+    - name: Run Tests
+      run: |
+        source venv/bin/activate
+        python -m unittest discover -s tests
+
+    - name: Upload Test Results (optional)
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: tests
+
