@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./'Flask_ss'
+        working-directory: ./students_app
     steps:
       - name: Check out the repository to the runner
         uses: actions/checkout@v4
@@ -25,4 +25,5 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run a script
-        run: python -m unittest -s tests -p 'tests\_\*.py'
+        run: python -m unittest -s tests -p 'test\_\*.py'
+
